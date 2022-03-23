@@ -1,0 +1,22 @@
+ switch (ch) { //switch is generally much faster than if, so it is used here
+    case "{": //plugin
+      stream.eat("/");
+      stream.eatSpace();
+      stream.eatWhile(/[^\s\u00a0=\"\'\/?(}]/);
+      state.tokenize = inPlugin;
+      return "tag";
+    case "_": //bold
+      if (stream.eat("_"))
+        return chain(inBlock("strong", "__", inText));
+      break;
+    case "'": //italics
+      if (stream.eat("'"))
+        return chain(inBlock("em", "''", inText));
+      break;
+    case "(":// Wiki Link
+      if (stream.eat("("))
+        return chain(inBlock("variable-2", "))", inText));
+      break;
+    case "[":// Weblink
+      return chain(inBlock("variable-3", "]", inText));
+      break;
